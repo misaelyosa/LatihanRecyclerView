@@ -20,6 +20,17 @@ class adapterRecView(private val listwayang: ArrayList<wayang>) : RecyclerView
             var _gambarWayang = itemView.findViewById<ImageView>(R.id.gambarWayang)
         }
 
+    private lateinit var onItemClickCallback : OnItemClickCallback
+
+    interface OnItemClickCallback {
+        fun onItemClicked(data:wayang)
+    }
+
+    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback){
+        this.onItemClickCallback = onItemClickCallback
+    }
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         val view: View = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_recycler, parent, false)
@@ -42,7 +53,8 @@ class adapterRecView(private val listwayang: ArrayList<wayang>) : RecyclerView
             .into(holder._gambarWayang)
 
         holder._gambarWayang.setOnClickListener{
-            Toast.makeText(holder.itemView.context,wayang.nama, Toast.LENGTH_LONG).show()
+//            Toast.makeText(holder.itemView.context,wayang.nama, Toast.LENGTH_LONG).show()
+            onItemClickCallback.onItemClicked(listwayang[position])
         }
     }
 }
