@@ -1,9 +1,11 @@
 package paba.b.latihanrecyclerview
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -29,22 +31,23 @@ class MainActivity : AppCompatActivity() {
         TampilkanData()
     }
 
-    private lateinit var _nama : Array<String>
-    private lateinit var _karakter : Array<String>
-    private lateinit var _deskripsi : Array<String>
-    private lateinit var _gambar : Array<String>
+    private lateinit var _nama : MutableList<String>
+    private lateinit var _karakter : MutableList<String>
+    private lateinit var _deskripsi : MutableList<String>
+    private lateinit var _gambar : MutableList<String>
     private var arWayang = arrayListOf<wayang>()
 
     private lateinit var _rvWayang : RecyclerView
 
     fun SiapkanData() {
-        _nama = resources.getStringArray(R.array.namaWayang)
-        _deskripsi = resources.getStringArray(R.array.deskripsiWayang)
-        _karakter = resources.getStringArray(R.array.karakterUtamaWayang)
-        _gambar = resources.getStringArray(R.array.gambarWayang)
+        _nama = resources.getStringArray(R.array.namaWayang).toMutableList()
+        _deskripsi = resources.getStringArray(R.array.deskripsiWayang).toMutableList()
+        _karakter = resources.getStringArray(R.array.karakterUtamaWayang).toMutableList()
+        _gambar = resources.getStringArray(R.array.gambarWayang).toMutableList()
     }
 
     fun TambahData() {
+        arWayang.clear()
         for (position in _nama.indices) {
             val data = wayang(
                 _gambar[position],
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun TampilkanData(){
-        _rvWayang.layoutManager = StaggeredGridLayoutManager(2,LinearLayoutManager.VERTICAL)
+        _rvWayang.layoutManager = StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL)
         _rvWayang.adapter = adapterRecView(arWayang)
 
         val adapterWayang = adapterRecView(arWayang)
@@ -71,6 +74,33 @@ class MainActivity : AppCompatActivity() {
 
                 intent.putExtra("kirimData", data)
                 startActivity(intent)
+            }
+
+            override fun delData(post: Int) {
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle("Hapus Data")
+                    .setMessage("Apakah Benar Data " + _nama[post] + "akan dihapus ?")
+                    .setPositiveButton(
+                        "HAPUS",
+                        DialogInterface.OnClickListener {dialog, which ->
+                            _gambar.removeAt(post)
+                            _nama.removeAt(post)
+                            _deskripsi.removeAt(post)
+                            _karakter.removeAt(post)
+                            TambahData()
+                            TampilkanData()
+                        }
+                    )
+                    .setNegativeButton(
+                        "BATAL",
+                        DialogInterface.OnClickListener{dialog, which ->
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Data Batal Dihapus",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    ).show()
             }
         })
     }
